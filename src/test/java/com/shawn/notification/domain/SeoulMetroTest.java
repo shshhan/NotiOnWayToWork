@@ -33,21 +33,26 @@ public class SeoulMetroTest {
 
     @Test
     public void periodFormatter() {
-        List<LocalDate> list1 = seoulMetro.periodFormatter("9/1");
+        List<LocalDate> list1 = seoulMetro.periodFormatter("9/ 01");
         assertThat(list1.size()).isEqualTo(1);
         assertThat(list1.get(0)).isEqualTo(LocalDate.of(2022,9,1));
 
-        List<LocalDate> list2 = seoulMetro.periodFormatter("9/20~22");
+        List<LocalDate> list2 = seoulMetro.periodFormatter("09/20 ~ 22");
         assertThat(list2.size()).isEqualTo(3);
         for(int i=0; i<list2.size(); i++){
             assertThat(list2.get(i)).isEqualTo(LocalDate.of(2022,9,20+i));
         }
 
-        List<LocalDate> list3 = seoulMetro.periodFormatter("9/15~9/19");
+        List<LocalDate> list3 = seoulMetro.periodFormatter("9/15~09/19");
         assertThat(list3.size()).isEqualTo(5);
         for(int i=0; i<list3.size(); i++){
             assertThat(list3.get(i)).isEqualTo(LocalDate.of(2022,9,15+i));
         }
+
+        List<LocalDate> list4 = seoulMetro.periodFormatter("09/1, 9/3");
+        assertThat(list4.size()).isEqualTo(2);
+        assertThat(list4.get(0)).isEqualTo(LocalDate.of(2022,9,1));
+        assertThat(list4.get(1)).isEqualTo(LocalDate.of(2022,9,3));
 
     }
 
