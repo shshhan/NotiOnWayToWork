@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,59 +19,32 @@ public class SeoulMetro {
 
     private final String SEOUL_METRO_NOTICE = "http://www.seoulmetro.co.kr/kr/board.do?menuIdx=546";
     private final String SEOUL_METRO = "http://www.seoulmetro.co.kr/kr/";
-    private final LocalDate now = LocalDate.now();
+    private final LocalDate today = LocalDate.now();
+    private final LocalDateTime now = LocalDateTime.now();
 
 
-    private List<Element> crawlTitle() throws IOException {
-            return Jsoup.connect(SEOUL_METRO_NOTICE).get()
-                    .getElementsByTag("table").get(0)
-                    .getElementsByTag("a")
-                    .stream()
-                    .filter(el -> el.attr("title").contains("운행 지연"))
-                    .collect(Collectors.toList());
+    public List<Element> crawlTitle() throws IOException {
+        return Jsoup.connect(SEOUL_METRO_NOTICE).get()
+                .getElementsByTag("table").get(0)
+                .getElementsByTag("a")
+                .stream()
+                .filter(el -> el.attr("title").contains("운행 지연"))
+                .filter(el -> this.isSoon(el))
+                .collect(Collectors.toList());
     }
 
-    private List<Elements> crawlBody() throws IOException {
-        this.findTitleForTodayAndTomorrow(this.crawlTitle());
-        List<Elements> pList = new ArrayList<>();
-        this.crawlTitle().forEach(el -> {
-            log.info(el.html());
-            try {
-                pList.add(
-                        Jsoup.connect(SEOUL_METRO+el.attr("href")).get()
-                                .getElementsByTag("tbody").get(0)
-                                .getElementsByTag("tr").get(2)
-                                .getElementsByClass("txc-textbox").get(0)
-                                .getElementsByTag("p")
-                        );
-            } catch (IOException e) {
-                e.printStackTrace();
+    private boolean isSoon(Element el) {
+        boolean returnVal = false;
+
+        for (LocalDate date : this.periodFormatter(el.html().replaceAll("([^0-9~/])", ""))) {
+
+            if( (now.getHour() > 12 && today.plusDays(1).isEqual(date))
+                || (now.getHour() < 12 && today.isEqual(date)) ) {
+                returnVal = true;
             }
-        });
+        }
 
-        return pList;
-    }
-
-    public void findTitleForTodayAndTomorrow(List<Element> elementList) {
-        elementList.forEach(el -> {
-            String dateFromTitle = el.html().replaceAll("([^0-9~/])", "");
-            if(isSoon(dateFromTitle)){
-
-            }
-        });
-
-    }
-
-    private boolean isSoon(String dateFromTitle){
-//        this.periodFormatter(dateFromTitle);
-//        if (now.isEqual(parsedFirstDate) || now.plusDays(1).isEqual(parsedFirstDate)) {
-//
-//
-//        } else {
-//            return false;
-//        }
-//
-        return true;
+        return returnVal;
     }
 
     public List<LocalDate> periodFormatter(String dateFromTitle) {
@@ -80,7 +53,7 @@ public class SeoulMetro {
                 .split("~|,");
 
         LocalDate parsedStartDate = LocalDate.of(
-                now.getYear(),
+                today.getYear(),
                 Integer.parseInt(dates[0].split("/")[0]),
                 Integer.parseInt(dates[0].split("/")[1])
         );
@@ -94,7 +67,7 @@ public class SeoulMetro {
                         parsedStartDate.getYear(),
                         Integer.parseInt(dates[1].split("/")[0]),
                         Integer.parseInt(dates[1].split("/")[1])
-                        );
+                );
             } else {
                 parsedEndDate = LocalDate.of(
                         parsedStartDate.getYear(),
@@ -119,16 +92,24 @@ public class SeoulMetro {
         return period;
     }
 
-    public LocalDate formatStringToLocalDate(String date){
-        DateTimeFormatter df;
+    private List<Elements> crawlBody() throws IOException {
+        List<Elements> pList = new ArrayList<>();
+        this.crawlTitle().forEach(el -> {
+            log.info(el.html());
+            try {
+                pList.add(
+                        Jsoup.connect(SEOUL_METRO+el.attr("href")).get()
+                                .getElementsByTag("tbody").get(0)
+                                .getElementsByTag("tr").get(2)
+                                .getElementsByClass("txc-textbox").get(0)
+                                .getElementsByTag("p")
+                        );
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
-        if(date.contains("/")) {
-            df = DateTimeFormatter.ofPattern(now.getYear() + "/MM/dd");
-        } else {
-            df = DateTimeFormatter.ofPattern(now.getYear() + "/" + now.getMonthValue() + "/dd");
-        }
-
-        return LocalDate.parse(date, df);
+        return pList;
     }
 
     public void crawlInformation() throws IOException {

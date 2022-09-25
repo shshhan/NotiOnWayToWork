@@ -19,17 +19,13 @@ public class SeoulMetroTest {
     private SeoulMetro seoulMetro;
 
     @Test
-    public void 서울교통공사_크롤링() throws IOException {
-        seoulMetro.crawlInformation();
+    public void crawlTitle() throws IOException {
+        seoulMetro.crawlTitle().forEach(title -> {
+            assertThat(title.html()).contains("운행 지연");
+            assertThat(title.html()).contains(String.valueOf(LocalDate.now().getMonthValue()));
+            assertThat(title.html().contains(String.valueOf(LocalDate.now().getDayOfMonth())));
+        });
     }
-
-//    @Test
-//    public void 날짜변환() {
-//        LocalDate date = seoulMetro.formatStringToLocalDate("09/25", 2022);
-//
-//        assertThat(date.equals(LocalDate.now())).isTrue();
-//
-//    }
 
     @Test
     public void periodFormatter() {
