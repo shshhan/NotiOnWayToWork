@@ -1,4 +1,4 @@
-package com.shawn.notification.domain;
+package com.shawn.notification;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -22,7 +22,7 @@ public class SeoulMetroFinder {
     private final LocalDateTime now = LocalDateTime.now();
 
 
-    public List<Element> crawlTitleForSoon() throws IOException {
+    public List<Element> crawlTitlesForSoon() throws IOException {
         return Jsoup.connect(SEOUL_METRO_NOTICE).get()
                 .getElementsByTag("table").get(0)
                 .getElementsByTag("a")
@@ -99,7 +99,7 @@ public class SeoulMetroFinder {
                 .getElementsByTag("p"));
     }
 
-    public String crawlInformation(List<Element> pList) throws IOException {
+    public String crawlInformation(List<Element> pList) {
         StringBuilder sb = new StringBuilder();
         pList.forEach(el -> {
             sb.append(el.text());

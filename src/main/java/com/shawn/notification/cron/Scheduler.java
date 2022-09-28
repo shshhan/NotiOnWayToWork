@@ -1,6 +1,8 @@
-package com.shawn.notification;
+package com.shawn.notification.cron;
 
-import com.shawn.notification.domain.SeoulMetroFinder;
+import com.shawn.notification.SeoulMetroDto;
+import com.shawn.notification.SeoulMetroFinder;
+import com.shawn.notification.domain.SeoulMetroRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Element;
@@ -18,8 +20,9 @@ import java.util.List;
 public class Scheduler {
 
     private final SeoulMetroFinder seoulMetroFinder;
+    private final SeoulMetroRepository seoulMetroRepository;
 
-    @Scheduled(cron = "*/10 * * * * *")
+    @Scheduled(cron = "0 6,22 * * * *")
     public void collectItems() throws IOException {
         log.info(LocalDateTime.now().toString());
 
@@ -30,7 +33,7 @@ public class Scheduler {
          * 저장 혹은 알림
          */
 
-        List<Element> titleList = seoulMetroFinder.crawlTitleForSoon();
+        List<Element> titleList = seoulMetroFinder.crawlTitlesForSoon();
 
         List<String> bodyList = new ArrayList<>();
         for (Element title : titleList) {
@@ -42,7 +45,10 @@ public class Scheduler {
             seoulMetroDtoList.add(new SeoulMetroDto(titleList.get(i).text(), bodyList.get(i)));
         }
 
-        seoulMetroDtoList.forEach(dto -> log.info(dto.toString()));
+        seoulMetroDtoList.forEach(dto -> {
+            log.info(dto.toString());
+            seoulMetroRepository.save(dto.toEntity());
+        });
 
     }
 }
