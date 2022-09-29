@@ -56,4 +56,7 @@ public class SeoulMetro {
 //        this.time = time;
     }
 
+    public String getTitle() {
+        return title;
+    }
 }
