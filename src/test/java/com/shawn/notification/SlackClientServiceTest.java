@@ -13,13 +13,13 @@ public class SlackClientServiceTest {
     private SlackClientService service;
 
     @Test
-    public void clientGet(){
+    public void getConversationList(){
      service.getConversationList();
     }
 
     @Test
     public void postMessage(){
-        SlackMessageRequestDto dto = new SlackMessageRequestDto("C044JML5MKQ", "Test Message.");
+        SlackMessageRequestDto dto = new SlackMessageRequestDto("C044TPLTK52", "Test Message.");
 
         service.postMessage(dto);
     }

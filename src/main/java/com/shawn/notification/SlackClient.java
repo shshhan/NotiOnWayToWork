@@ -12,7 +12,7 @@ public interface SlackClient {
     @GetMapping("/api/conversations.list")
     ResponseEntity<Object> getConversationList();
 
-    @PostMapping(value = "/chat.postMessage")
+    @PostMapping(value = "/api/chat.postMessage")
     ResponseEntity<Object> postMessage(SlackMessageRequestDto dto);
 
 }
