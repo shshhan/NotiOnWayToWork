@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,13 +25,16 @@ public class SeoulMetroFinderTest {
     @Autowired
     private SeoulMetroFinder seoulMetroFinder;
 
+    private LocalDate today = LocalDate.of(2022,9,28);
+    private LocalDateTime now = LocalDateTime.of(2022,9,28,8,0);
+
     @Test
     public void crawlTitle() throws IOException {
-        seoulMetroFinder.crawlTitlesForSoon().forEach(title -> {
+        seoulMetroFinder.crawlTitlesByDate(today, now).forEach(title -> {
             System.out.println(title);
             assertThat(title.html()).contains("운행 지연");
-            assertThat(title.html()).contains(String.valueOf(LocalDate.now().getMonthValue()));
-            assertThat(title.html().contains(String.valueOf(LocalDate.now().getDayOfMonth())));
+            assertThat(title.html()).contains(String.valueOf(today.getMonthValue()));
+            assertThat(title.html().contains(String.valueOf(today.getDayOfMonth())));
         });
     }
 
@@ -38,31 +42,33 @@ public class SeoulMetroFinderTest {
     public void isSoon() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String elHtml = "열차운행 지연 예정 안내(9/26~30)";
 
-        Method isSoon = seoulMetroFinder.getClass().getDeclaredMethod("isSoon", String.class);
+        Method isSoon = seoulMetroFinder
+                .getClass()
+                .getDeclaredMethod("isSoon", String.class, LocalDate.class, LocalDateTime.class);
         isSoon.setAccessible(true);
 
-        assertThat(isSoon.invoke(seoulMetroFinder, elHtml)).isEqualTo(true);
+        assertThat(isSoon.invoke(seoulMetroFinder, elHtml, today, now)).isEqualTo(true);
     }
 
     @Test
     public void periodFormatter() {
-        List<LocalDate> list1 = seoulMetroFinder.periodFormatter("9/ 01");
+        List<LocalDate> list1 = seoulMetroFinder.periodFormatter("9/ 01", today);
         assertThat(list1.size()).isEqualTo(1);
         assertThat(list1.get(0)).isEqualTo(LocalDate.of(2022,9,1));
 
-        List<LocalDate> list2 = seoulMetroFinder.periodFormatter("09/20 ~ 22");
+        List<LocalDate> list2 = seoulMetroFinder.periodFormatter("09/20 ~ 22", today);
         assertThat(list2.size()).isEqualTo(3);
         for(int i=0; i<list2.size(); i++){
             assertThat(list2.get(i)).isEqualTo(LocalDate.of(2022,9,20+i));
         }
 
-        List<LocalDate> list3 = seoulMetroFinder.periodFormatter("9/15~09/19");
+        List<LocalDate> list3 = seoulMetroFinder.periodFormatter("9/15~09/19", today);
         assertThat(list3.size()).isEqualTo(5);
         for(int i=0; i<list3.size(); i++){
             assertThat(list3.get(i)).isEqualTo(LocalDate.of(2022,9,15+i));
         }
 
-        List<LocalDate> list4 = seoulMetroFinder.periodFormatter("09/1, 9/3");
+        List<LocalDate> list4 = seoulMetroFinder.periodFormatter("09/1, 9/3", today);
         assertThat(list4.size()).isEqualTo(2);
         assertThat(list4.get(0)).isEqualTo(LocalDate.of(2022,9,1));
         assertThat(list4.get(1)).isEqualTo(LocalDate.of(2022,9,3));

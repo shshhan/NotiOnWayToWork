@@ -18,24 +18,21 @@ public class SeoulMetroFinder {
 
     private final String SEOUL_METRO_NOTICE = "http://www.seoulmetro.co.kr/kr/board.do?menuIdx=546";
     private final String SEOUL_METRO = "http://www.seoulmetro.co.kr/kr/";
-    private final LocalDate today = LocalDate.now();
-    private final LocalDateTime now = LocalDateTime.now();
 
-
-    public List<Element> crawlTitlesForSoon() throws IOException {
+    public List<Element> crawlTitlesByDate(LocalDate today, LocalDateTime now) throws IOException {
         return Jsoup.connect(SEOUL_METRO_NOTICE).get()
                 .getElementsByTag("table").get(0)
                 .getElementsByTag("a")
                 .stream()
                 .filter(el -> el.attr("title").contains("운행 지연"))
-                .filter(el -> this.isSoon(el.text()))
+                .filter(el -> this.isSoon(el.text(), today, now))
                 .collect(Collectors.toList());
     }
 
-    private boolean isSoon(String elHtml) {
+    private boolean isSoon(String elHtml, LocalDate today, LocalDateTime now) {
         boolean returnVal = false;
 
-        for (LocalDate date : this.periodFormatter(elHtml.replaceAll("([^0-9~/])", ""))) {
+        for (LocalDate date : this.periodFormatter(elHtml.replaceAll("([^0-9~/])", ""), today)) {
 
             if( (now.getHour() > 12 && today.plusDays(1).isEqual(date))
                 || (now.getHour() < 12 && today.isEqual(date)) ) {
@@ -46,7 +43,7 @@ public class SeoulMetroFinder {
         return returnVal;
     }
 
-    public List<LocalDate> periodFormatter(String dateFromTitle) {
+    public List<LocalDate> periodFormatter(String dateFromTitle, LocalDate today) {
         String[] dates = dateFromTitle  // 09/20 or 09/20~25 or 09/20~09/25
                 .replaceAll(" ", "")
                 .split("~|,");

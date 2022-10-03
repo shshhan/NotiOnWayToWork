@@ -1,5 +1,6 @@
 package com.shawn.notification.domain;
 
+import com.shawn.notification.SeoulMetroDto;
 import com.shawn.notification.cron.Scheduler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,14 @@ public class SchedulerTest {
             assertThat(row.getTitle()).contains("운행 지연");
         });
 
+    }
+
+    @Test
+    public void notifyInfo() {
+        repository.saveAndFlush(new SeoulMetroDto("Example Title", "Example Content").toEntity());
+        scheduler.notifyInfo();
+
+        assertThat(repository.findByMsgSentTimeIsNullOrderByCreatedTimeDesc()).isEmpty();
     }
 
 }
