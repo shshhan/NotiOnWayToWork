@@ -1,6 +1,5 @@
 package com.shawn.notification;
 
-import com.shawn.notification.domain.NotificationStatus;
 import com.shawn.notification.domain.SeoulMetro;
 import lombok.ToString;
 
@@ -18,8 +17,7 @@ public class SeoulMetroDto {
     public SeoulMetro toEntity(){
         return SeoulMetro.builder()
                 .title(this.title)
-                .body(body)
-                .notificationStatus(NotificationStatus.STAND_BY)
+                .content(this.body)
                 .build();
     }
 }

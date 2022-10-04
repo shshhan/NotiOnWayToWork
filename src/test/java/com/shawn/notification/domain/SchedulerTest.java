@@ -37,7 +37,7 @@ public class SchedulerTest {
         repository.saveAndFlush(new SeoulMetroDto("Example Title", "Example Content").toEntity());
         scheduler.notifyInfo();
 
-        assertThat(repository.findByMsgSentTimeIsNullOrderByCreatedTimeDesc()).isEmpty();
+        assertThat(repository.findByMsgSentTimeIsNullOrderByCreatedTimeAsc()).isEmpty();
     }
 
 }
