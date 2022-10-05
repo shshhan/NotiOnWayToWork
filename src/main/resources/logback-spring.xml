@@ -12,6 +12,11 @@
         <logger name="com.shawn.notification" level="DEBUG" additivity="false">
             <appender-ref ref="CONSOLE" />
         </logger>
+    </springProfile>
 
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="FILE" />
+        </root>
     </springProfile>
 </configuration>

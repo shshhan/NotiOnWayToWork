@@ -2,6 +2,7 @@ package com.shawn.notification.domain;
 
 import com.shawn.notification.SeoulMetroDto;
 import com.shawn.notification.cron.Scheduler;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +21,11 @@ public class SchedulerTest {
     private Scheduler scheduler;
     @Autowired
     private SeoulMetroRepository repository;
+
+    @AfterEach
+    public void deleteAll() {
+        repository.deleteAll();
+    }
 
 
     @Test
