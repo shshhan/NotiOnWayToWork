@@ -31,7 +31,7 @@ public class Scheduler {
     @Value("${slack.chat}")
     private String slackChat;
 
-    @Scheduled(cron = "0 6,22 * * * *")
+    @Scheduled(cron = "0 0 6,7,8,18,19,20,21 * * *")
     public void collectItems() throws IOException {
         log.debug(">>>>> collectItems invoked.");
 
@@ -50,7 +50,10 @@ public class Scheduler {
         List<String> bodyList = new ArrayList<>();
         for (Element title : titleList) {
             log.info(title.text());
-//            if(seoulMetroRepository.findByTitle(title.text()));
+            seoulMetroRepository.findByTitle(title.text())
+                    .ifPresent(sm -> {
+                        throw new RuntimeException("이미 등록된 게시물.");  // TODO: 2022/10/05 throw 말고 반복문 내부에서 처리되고 다음으로 넘어갈 수 있는 방법 고민해보기
+                    });
             bodyList.add(seoulMetroFinder.crawlInformation(seoulMetroFinder.crawlBody(title)));
         }
 
@@ -66,7 +69,7 @@ public class Scheduler {
 
     }
 
-    @Scheduled(cron = "0 5 6,7,8,21,22,23 * * *")
+    @Scheduled(cron = "0 5 6,7,8,18,19,20,21 * * *")
     @Transactional
     public void notifyInfo() {
         log.debug(">>>>> notifyInfo invoked.");

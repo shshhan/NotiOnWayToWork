@@ -1,9 +1,14 @@
 package com.shawn.notification;
 
+import com.shawn.notification.domain.SeoulMetro;
 import com.shawn.notification.domain.SeoulMetroRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,15 +17,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest()
 public class SeoulMetroRepositoryTest {
 
+    @Autowired
     private SeoulMetroRepository repository;
 
     @Test
-    public void findByMsgSentTimeIsNullOrderByCreatedTimeDesc() {
-        repository.saveAndFlush(new SeoulMetroDto("Example Title One", "Example Body One").toEntity());
-        repository.saveAndFlush(new SeoulMetroDto("Example Title Two", "Example Body Two").toEntity());
+    public void findByMsgSentTimeIsNullOrderByCreatedTimeAsc() {
+        for(int i = 1; i < 3; i++){
+            repository.saveAndFlush(new SeoulMetroDto("Example Title " + i, "Example Body " + i).toEntity());
+        }
 
-        assertThat(repository.findByMsgSentTimeIsNullOrderByCreatedTimeDesc().get(0).getTitle()).contains("Example Title One");
-        assertThat(repository.findByMsgSentTimeIsNullOrderByCreatedTimeDesc().get(1).getTitle()).contains("Example Title Two");
+        List<SeoulMetro> all = repository.findByMsgSentTimeIsNullOrderByCreatedTimeAsc();
+        for(int i = 0; i < all.size(); i++){
+            SeoulMetro sm = all.get(i);
+            assertThat(sm.getTitle()).contains("Example Title " + (i+1));
+            assertThat(sm.getContent()).contains("Example Body " + (i+1));
+        }
+
+    }
+
+    @Test
+    public void findByTitle() {
+        repository.saveAndFlush(new SeoulMetroDto("Example Title ", "Example Body ").toEntity());
+
+        Optional<SeoulMetro> maybeSeoulMetro = repository.findByTitle("FindByTitleTest");
+
+        assertThat(maybeSeoulMetro.isPresent()).isEqualTo(false);
 
     }
 
