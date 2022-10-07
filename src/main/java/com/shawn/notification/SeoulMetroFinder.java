@@ -1,9 +1,13 @@
 package com.shawn.notification;
 
+import com.shawn.notification.domain.SeoulMetroRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -13,11 +17,57 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Component
-public class SeoulMetroFinder {
+@RequiredArgsConstructor
+@Service
+public class SeoulMetroFinder implements Collector{
 
-    private final String SEOUL_METRO_NOTICE = "http://www.seoulmetro.co.kr/kr/board.do?menuIdx=546";
-    private final String SEOUL_METRO = "http://www.seoulmetro.co.kr/kr/";
+    private final SeoulMetroRepository seoulMetroRepository;
+
+    @Value("${metro.notice}")
+    private String SEOUL_METRO_NOTICE;
+    @Value("${metro.domain}")
+    private String SEOUL_METRO;
+
+    private List<SeoulMetroDto> seoulMetroDtoList = new ArrayList<>();
+
+    @Override
+    public void collectInformation(LocalDate today, LocalDateTime now) {
+        List<Element> titleList = new ArrayList<>();
+        List<String> bodyList = new ArrayList<>();
+
+        try {
+            titleList = this.crawlTitlesByDate(today, now);
+
+            for (Element titleEl : titleList){
+                String title = titleEl.text();
+                log.info(title);
+                seoulMetroRepository.findByTitle(title)
+                        .ifPresent((sm) -> {
+                            throw new RuntimeException("이미 등록된 게시물입니다.");
+                        });
+
+                bodyList.add(this.crawlBody(titleEl));
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for(int i = 0; i < titleList.size(); i++) {
+            this.seoulMetroDtoList.add(new SeoulMetroDto(titleList.get(i).text(), bodyList.get(i)));
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public void saveInformation() {
+        this.seoulMetroDtoList.forEach(dto -> {
+            log.info(dto.toString());
+            seoulMetroRepository.save(dto.toEntity());
+        });
+    }
+
 
     public List<Element> crawlTitlesByDate(LocalDate today, LocalDateTime now) throws IOException {
         return Jsoup.connect(SEOUL_METRO_NOTICE).get()
@@ -88,19 +138,17 @@ public class SeoulMetroFinder {
         return period;
     }
 
-    public List<Element> crawlBody(Element title) throws IOException {
-        return new ArrayList<>(Jsoup.connect(SEOUL_METRO + title.attr("href")).get()
+    public String crawlBody(Element title) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        Jsoup.connect(SEOUL_METRO + title.attr("href"))
+                .get()
                 .getElementsByTag("tbody").get(0)
                 .getElementsByTag("tr").get(2)
                 .getElementsByClass("txc-textbox").get(0)
-                .getElementsByTag("p"));
-    }
-
-    public String crawlInformation(List<Element> pList) {
-        StringBuilder sb = new StringBuilder();
-        pList.forEach(el -> {
-            sb.append(el.text());
-        });
+                .getElementsByTag("p")
+                .stream().forEach(p -> {
+                    sb.append(p.text());
+                });
         return sb.toString();
     }
 
