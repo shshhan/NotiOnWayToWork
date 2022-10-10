@@ -15,8 +15,8 @@
     </springProfile>
 
     <springProfile name="dev">
-        <root level="debug">
-            <appender-ref ref="CONSOLE" />
+        <root level="DEBUG">
+            <appender-ref ref="FILE" />
         </root>
     </springProfile>
 </configuration>
