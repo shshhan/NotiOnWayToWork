@@ -1,7 +1,7 @@
 package com.shawn.notification.cron;
 
 import com.shawn.notification.Collector;
-import com.shawn.notification.SeoulMetroFinder;
+import com.shawn.notification.SeoulMetroService;
 import com.shawn.notification.SlackClientService;
 import com.shawn.notification.SlackMessageRequestDto;
 import com.shawn.notification.domain.SeoulMetroRepository;
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Component
 public class Scheduler {
 
-    private final SeoulMetroFinder seoulMetroFinder;
+    private final SeoulMetroService seoulMetroService;
     private final SeoulMetroRepository seoulMetroRepository;
     private final SlackClientService slackClientService;
 
@@ -35,7 +35,7 @@ public class Scheduler {
         LocalDate today = LocalDate.now();
         LocalDateTime now = LocalDateTime.now();
 
-        Collector collector = new SeoulMetroFinder(seoulMetroRepository);
+        Collector collector = seoulMetroService;
 
         collector.collectInformation(today, now);
         collector.saveInformation();

@@ -1,6 +1,7 @@
 package com.shawn.notification;
 
 import com.shawn.notification.domain.SeoulMetroRepository;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -16,10 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class SeoulMetroFinder implements Collector{
+public class SeoulMetroService implements Collector{
 
     private final SeoulMetroRepository seoulMetroRepository;
 
@@ -70,6 +72,7 @@ public class SeoulMetroFinder implements Collector{
 
 
     public List<Element> crawlTitlesByDate(LocalDate today, LocalDateTime now) throws IOException {
+        log.debug("SEOUL_METRO_NOTICE : {}", SEOUL_METRO_NOTICE);
         return Jsoup.connect(SEOUL_METRO_NOTICE).get()
                 .getElementsByTag("table").get(0)
                 .getElementsByTag("a")

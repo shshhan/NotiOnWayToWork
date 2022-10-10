@@ -1,8 +1,10 @@
 package com.shawn.notification;
 
 import com.shawn.notification.domain.SeoulMetro;
+import lombok.Getter;
 import lombok.ToString;
 
+@Getter
 @ToString
 public class SeoulMetroDto {
 
@@ -20,4 +22,5 @@ public class SeoulMetroDto {
                 .content(this.body)
                 .build();
     }
+
 }
