@@ -1,9 +1,9 @@
 package com.shawn.notification.cron;
 
-import com.shawn.notification.Collector;
-import com.shawn.notification.SeoulMetroService;
-import com.shawn.notification.SlackClientService;
-import com.shawn.notification.SlackMessageRequestDto;
+import com.shawn.notification.Service.Collector;
+import com.shawn.notification.Service.SeoulMetroService;
+import com.shawn.notification.Service.SlackClientService;
+import com.shawn.notification.dto.SlackMessageRequestDto;
 import com.shawn.notification.domain.SeoulMetroRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

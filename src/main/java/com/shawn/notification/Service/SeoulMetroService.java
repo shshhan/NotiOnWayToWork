@@ -1,6 +1,7 @@
-package com.shawn.notification;
+package com.shawn.notification.Service;
 
 import com.shawn.notification.domain.SeoulMetroRepository;
+import com.shawn.notification.dto.SeoulMetroDto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class SeoulMetroService implements Collector{
+public class SeoulMetroService implements Collector {
 
     private final SeoulMetroRepository seoulMetroRepository;
 

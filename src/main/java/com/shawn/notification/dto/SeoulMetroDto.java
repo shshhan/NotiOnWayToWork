@@ -1,4 +1,4 @@
-package com.shawn.notification;
+package com.shawn.notification.dto;
 
 import com.shawn.notification.domain.SeoulMetro;
 import lombok.Getter;

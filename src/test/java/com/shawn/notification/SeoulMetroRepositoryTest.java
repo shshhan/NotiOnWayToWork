@@ -2,6 +2,7 @@ package com.shawn.notification;
 
 import com.shawn.notification.domain.SeoulMetro;
 import com.shawn.notification.domain.SeoulMetroRepository;
+import com.shawn.notification.dto.SeoulMetroDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

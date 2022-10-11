@@ -1,4 +1,4 @@
-package com.shawn.notification;
+package com.shawn.notification.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,5 +1,7 @@
-package com.shawn.notification;
+package com.shawn.notification.Service;
 
+import com.shawn.notification.domain.SlackClient;
+import com.shawn.notification.dto.SlackMessageRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.shawn.notification.domain;
 
-import com.shawn.notification.SeoulMetroService;
+import com.shawn.notification.Service.SeoulMetroService;
 import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

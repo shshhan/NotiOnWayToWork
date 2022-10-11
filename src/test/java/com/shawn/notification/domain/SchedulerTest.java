@@ -1,6 +1,6 @@
 package com.shawn.notification.domain;
 
-import com.shawn.notification.SeoulMetroDto;
+import com.shawn.notification.dto.SeoulMetroDto;
 import com.shawn.notification.cron.Scheduler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
