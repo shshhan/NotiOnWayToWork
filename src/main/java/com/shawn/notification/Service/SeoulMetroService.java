@@ -86,7 +86,7 @@ public class SeoulMetroService implements Collector {
     private boolean isSoon(String elHtml, LocalDate today, LocalDateTime now) {
         boolean returnVal = false;
 
-        for (LocalDate date : this.periodFormatter(elHtml.replaceAll("([^0-9~/])", ""), today)) {
+        for (LocalDate date : this.periodFormatter(elHtml.replaceAll("([^0-9~/,])", ""), today)) {
 
             if( (now.getHour() > 12 && today.plusDays(1).isEqual(date))
                 || (now.getHour() < 12 && today.isEqual(date)) ) {
@@ -98,7 +98,7 @@ public class SeoulMetroService implements Collector {
     }
 
     public List<LocalDate> periodFormatter(String dateFromTitle, LocalDate today) {
-        String[] dates = dateFromTitle  // 09/20 or 09/20~25 or 09/20~09/25
+        String[] dates = dateFromTitle  // 09/20 or 09/20~25 or 09/20~09/25 or 9/20, 21 or 9/20, 9/21
                 .replaceAll(" ", "")
                 .split("~|,");
 

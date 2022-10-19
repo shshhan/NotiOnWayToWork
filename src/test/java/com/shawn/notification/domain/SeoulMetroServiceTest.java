@@ -84,6 +84,10 @@ public class SeoulMetroServiceTest {
         assertThat(list4.get(0)).isEqualTo(LocalDate.of(2022,9,1));
         assertThat(list4.get(1)).isEqualTo(LocalDate.of(2022,9,3));
 
+        List<LocalDate> list5 = seoulMetroService.periodFormatter("10/20, 21", date220928);
+        assertThat(list5.size()).isEqualTo(2);
+        assertThat(list5.get(0)).isEqualTo(LocalDate.of(2022,10,20));
+        assertThat(list5.get(1)).isEqualTo(LocalDate.of(2022,10,21));
     }
 
     @Test
