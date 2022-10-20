@@ -1,4 +1,4 @@
-package com.shawn.notification.Service;
+package com.shawn.notification.collector;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

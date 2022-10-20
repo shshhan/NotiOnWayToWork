@@ -1,15 +1,15 @@
-package com.shawn.notification.cron;
+package com.shawn.notification.service;
 
-import com.shawn.notification.Service.Collector;
-import com.shawn.notification.Service.SeoulMetroService;
-import com.shawn.notification.Service.SlackClientService;
-import com.shawn.notification.dto.SlackMessageRequestDto;
+import com.shawn.notification.collector.CollectorFactory;
+import com.shawn.notification.collector.Collector;
+import com.shawn.notification.collector.SlackClientService;
 import com.shawn.notification.domain.SeoulMetroRepository;
+import com.shawn.notification.dto.SlackMessageRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -18,12 +18,15 @@ import java.time.LocalDateTime;
 
 @Slf4j
 @RequiredArgsConstructor
-@Component
-public class Scheduler {
+@Service
+public class CronService {
 
-    private final SeoulMetroService seoulMetroService;
+    private final CollectorFactory collectorFactory;
     private final SeoulMetroRepository seoulMetroRepository;
     private final SlackClientService slackClientService;
+
+    @Value("${collectors.name}")
+    private String collectors;
 
     @Value("${slack.chat}")
     private String slackChat;
@@ -35,10 +38,12 @@ public class Scheduler {
         LocalDate today = LocalDate.now();
         LocalDateTime now = LocalDateTime.now();
 
-        Collector collector = seoulMetroService;
+        for (String collectorName : collectors.split(",")) {
+            Collector collector = collectorFactory.getCollector(collectorName);
+            collector.collectInformation(today, now);
+            collector.saveInformation();
+        }
 
-        collector.collectInformation(today, now);
-        collector.saveInformation();
     }
 
     @Scheduled(cron = "0 5 6,7,8,18,19,20,21 * * *")
