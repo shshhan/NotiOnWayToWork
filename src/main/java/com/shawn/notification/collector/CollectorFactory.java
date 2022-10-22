@@ -14,7 +14,7 @@ public class CollectorFactory {
             case "SEOUL-METRO-NOTICE" :
                 return seoulMetroNoticeCollector;
             default :
-                throw new IllegalArgumentException("없는 Collector");
+                throw new IllegalArgumentException("존재하지 않는 Collector");
         }
 
     }

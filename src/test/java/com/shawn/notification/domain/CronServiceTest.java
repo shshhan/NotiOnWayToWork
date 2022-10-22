@@ -1,7 +1,7 @@
 package com.shawn.notification.domain;
 
 import com.shawn.notification.dto.SeoulMetroDto;
-import com.shawn.notification.cron.Scheduler;
+import com.shawn.notification.service.CronService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +15,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("local")
 @SpringBootTest()
-public class SchedulerTest {
+public class CronServiceTest {
 
     @Autowired
-    private Scheduler scheduler;
+    private CronService cronService;
     @Autowired
     private SeoulMetroRepository repository;
 
@@ -30,7 +30,7 @@ public class SchedulerTest {
 
     @Test
     public void collectItems() throws IOException {
-        scheduler.collectItems();
+        cronService.collectItems();
 
         repository.findAll().forEach(row -> {
             assertThat(row.getTitle()).contains("운행 지연");
@@ -41,7 +41,7 @@ public class SchedulerTest {
     @Test
     public void notifyInfo() {
         repository.saveAndFlush(new SeoulMetroDto("Example Title", "Example Content").toEntity());
-        scheduler.notifyInfo();
+        cronService.notifyInfo();
 
         assertThat(repository.findByMsgSentTimeIsNullOrderByCreatedTimeAsc()).isEmpty();
     }
