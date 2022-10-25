@@ -1,7 +1,5 @@
-package com.shawn.notification.collector;
+package com.shawn.notification.sender;
 
-import com.shawn.notification.Sender;
-import com.shawn.notification.domain.SlackClient;
 import com.shawn.notification.dto.SlackMessageRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

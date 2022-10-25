@@ -1,4 +1,4 @@
-package com.shawn.notification.domain;
+package com.shawn.notification.sender;
 
 import com.shawn.notification.config.OpenFeignSlackConfig;
 import com.shawn.notification.dto.SlackMessageRequestDto;

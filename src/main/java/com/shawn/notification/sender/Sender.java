@@ -1,4 +1,4 @@
-package com.shawn.notification;
+package com.shawn.notification.sender;
 
 import com.shawn.notification.dto.SlackMessageRequestDto;
 

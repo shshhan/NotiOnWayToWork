@@ -1,7 +1,5 @@
 package com.shawn.notification.sender;
 
-import com.shawn.notification.Sender;
-import com.shawn.notification.collector.SlackClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,8 +9,8 @@ public class SenderFactory {
 
     private final SlackClientService slackClientService;
 
-    public Sender getNotificationSender(String collectorName) {
-        switch(collectorName) {
+    public Sender getNotificationSender(String senderName) {
+        switch(senderName) {
             case "SLACK" :
                 return slackClientService;
             default :

@@ -1,12 +1,11 @@
 package com.shawn.notification.service;
 
-import com.shawn.notification.Sender;
 import com.shawn.notification.collector.Collector;
 import com.shawn.notification.collector.CollectorFactory;
-import com.shawn.notification.collector.SlackClientService;
 import com.shawn.notification.domain.SeoulMetroRepository;
 import com.shawn.notification.dto.SlackMessageRequestDto;
 import com.shawn.notification.sender.SenderFactory;
+import com.shawn.notification.sender.SlackClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,14 +57,13 @@ public class CronService {
         log.debug(">>>>> notifyInfo invoked.");
 
         seoulMetroRepository.findByMsgSentTimeIsNullOrderByCreatedTimeAsc()
-                .forEach(sm -> {
-                    for (String senderName : senders.split(",")) {
-                        Sender sender = senderFactory.getNotificationSender(senderName);
-
-                        sender.sendNotification(new SlackMessageRequestDto(slackChat, sm.getTitle() + "\n" + sm.getContent()));
-                    }
-                });
-
+            .forEach(sm -> {
+                for (String senderName : senders.split(",")) {
+                    senderFactory.getNotificationSender(senderName)
+                            .sendNotification(new SlackMessageRequestDto(slackChat, sm.getTitle() + "\n" + sm.getContent()));
+                    sm.messageSent();
+                }
+            });
 
     }
 

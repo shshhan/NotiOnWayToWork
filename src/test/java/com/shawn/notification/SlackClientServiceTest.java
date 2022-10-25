@@ -1,6 +1,6 @@
 package com.shawn.notification;
 
-import com.shawn.notification.collector.SlackClientService;
+import com.shawn.notification.sender.SlackClientService;
 import com.shawn.notification.dto.SlackMessageRequestDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
