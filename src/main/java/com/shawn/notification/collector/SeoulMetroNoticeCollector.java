@@ -15,7 +15,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -31,33 +33,25 @@ public class SeoulMetroNoticeCollector implements Collector {
     @Value("${metro.domain}")
     private String SEOUL_METRO;
 
-    private List<SeoulMetroDto> seoulMetroDtoList = new ArrayList<>();
+    private Set<SeoulMetroDto> seoulMetroDtoSet = new HashSet<>();
+
 
     @Override
     public void collectInformation(LocalDate today, LocalDateTime now) {
-        List<Element> titleList = new ArrayList<>();
-        List<String> bodyList = new ArrayList<>();
 
         try {
-            titleList = this.crawlTitlesByDate(today, now);
-
-            for (Element titleEl : titleList){
+            for (Element titleEl : this.crawlTitlesByDate(today, now)){
                 String title = titleEl.text();
                 log.info(title);
                 seoulMetroRepository.findByTitle(title)
                         .ifPresent((sm) -> {
                             throw new RuntimeException("이미 등록된 게시물입니다.");
                         });
-
-                bodyList.add(this.crawlBody(titleEl));
+                seoulMetroDtoSet.add(new SeoulMetroDto(titleEl.text(), this.crawlBody(titleEl)));
             }
 
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
-        for(int i = 0; i < titleList.size(); i++) {
-            this.seoulMetroDtoList.add(new SeoulMetroDto(titleList.get(i).text(), bodyList.get(i)));
         }
 
     }
@@ -65,10 +59,11 @@ public class SeoulMetroNoticeCollector implements Collector {
     @Override
     @Transactional
     public void saveInformation() {
-        this.seoulMetroDtoList.forEach(dto -> {
+        this.seoulMetroDtoSet.forEach(dto -> {
             log.info(dto.toString());
             seoulMetroRepository.save(dto.toEntity());
         });
+
     }
 
 

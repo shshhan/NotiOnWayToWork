@@ -1,7 +1,5 @@
-package com.shawn.notification;
+package com.shawn.notification.domain;
 
-import com.shawn.notification.domain.SeoulMetro;
-import com.shawn.notification.domain.SeoulMetroRepository;
 import com.shawn.notification.dto.SeoulMetroDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("local")
 @SpringBootTest()
-public class SeoulMetroRepositoryTest {
+public class SeoulMetroTest {
 
     @Autowired
     private SeoulMetroRepository repository;

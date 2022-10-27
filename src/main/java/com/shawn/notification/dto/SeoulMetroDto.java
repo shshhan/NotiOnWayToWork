@@ -1,12 +1,14 @@
 package com.shawn.notification.dto;
 
 import com.shawn.notification.domain.SeoulMetro;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
 @Getter
 @ToString
-public class SeoulMetroDto {
+@EqualsAndHashCode
+public class SeoulMetroDto implements BaseDto{
 
     private String title;
     private String body;

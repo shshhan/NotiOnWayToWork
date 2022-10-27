@@ -1,7 +1,9 @@
-package com.shawn.notification.domain;
+package com.shawn.notification.collector;
 
-import com.shawn.notification.collector.SeoulMetroNoticeCollector;
+import com.shawn.notification.domain.SeoulMetro;
+import com.shawn.notification.domain.SeoulMetroRepository;
 import org.jsoup.nodes.Element;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,23 +26,44 @@ public class SeoulMetroNoticeCollectorTest {
     @Autowired
     private SeoulMetroNoticeCollector seoulMetroNoticeCollector;
 
+    @Autowired
+    private SeoulMetroRepository seoulMetroRepository;
+
     private LocalDate today = LocalDate.now();
     private LocalDateTime now = LocalDateTime.now();
     private LocalDate date220928 = LocalDate.of(2022,9,28);
     private LocalDateTime dt2209280800 = LocalDateTime.of(2022,9,28,8,0);
 
 
+    @AfterEach
+    public void deleteAll() {
+        seoulMetroRepository.deleteAll();
+    }
+
     @Test
-    public void collectInformation() throws NoSuchFieldException, IllegalAccessException {
+    public void collectInformation() {
         seoulMetroNoticeCollector.collectInformation(today, now);
 
-        seoulMetroNoticeCollector.getSeoulMetroDtoList()
+        seoulMetroNoticeCollector.getSeoulMetroDtoSet()
                 .forEach(dto -> assertThat(dto.getTitle()).startsWith("열차운행 지연 예정 안내"));
 
     }
 
     @Test
-    public void crawlTitle() throws IOException {
+    public void saveInformation() {
+        seoulMetroNoticeCollector.saveInformation();
+        List<SeoulMetro> list = seoulMetroRepository.findAll();
+
+        if (seoulMetroNoticeCollector.getSeoulMetroDtoSet().size() > 0) {
+            assertThat(list).isNotEmpty();
+        } else {
+            assertThat(list).isEmpty();
+        }
+
+    }
+
+    @Test
+    public void crawlTitlesByDate() throws IOException {
         seoulMetroNoticeCollector.crawlTitlesByDate(today, now)
                 .forEach(title -> {
                     System.out.println(title);
